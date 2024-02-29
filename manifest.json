@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Every Noise Explorer",
+  "version": "1.0",
+  "description": "Every Noise music player",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "matches": [
+        "https://everynoise.com/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
