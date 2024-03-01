@@ -21,11 +21,22 @@ function stop() {
   })
 }
 
+chrome.runtime.onMessage.addListener((obj, sender, response) => {
+  if (obj.type === "CURRENT") {
+    const { genre, song, genreId } = obj;
+    document.getElementById('genre').innerText = "Genre: " + genre;
+    document.getElementById('song').innerText = "Song: " + song;
+    document.getElementById('genreId').value = genreId;
+  }
+})
+
 document.addEventListener('DOMContentLoaded', async function() {
   tab = await getCurrentTab();
   document.getElementById('play-from').addEventListener('click', playFrom);
   document.getElementById('stop').addEventListener('click', stop)
-  chrome.storage.sync.get(["genreId"]).then(({ genreId }) => {
+  chrome.storage.sync.get(["genre", "song", "genreId"]).then(({ genre, song, genreId }) => {
+    if (genre) document.getElementById('genre').innerText = "Genre: " + genre;
+    if (song) document.getElementById('song').innerText = "Song: " + song;
     if (genreId) document.getElementById("genreId").value = genreId
   })
 })

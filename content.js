@@ -1,21 +1,40 @@
+let current;
+let playState = false;
+const genres = Array.from(document.getElementsByClassName("genre"))
+  .sort((g1, g2) => g1.offsetTop - g2.offsetTop)
+
 chrome.runtime.onMessage.addListener((obj, sender, response) => {
-  const { type, start } = obj
+  const { type } = obj
   if (type === "PLAY") {
-    console.log("Playing from " + start)
-    const genres = Array.from(document.getElementsByClassName("genre"))
-      .sort((g1, g2) => g1.offsetTop - g2.offsetTop)
-    genres.slice(start).forEach((g, i) => {
-      setTimeout(() => {
-        g.click();
-        let genreId = start + i
-        chrome.storage.sync.set({ genreId })
-      }, i * 30000);
-    });
+    const { start } = obj
+    if (!playState || start !== current) {
+      playState = true;
+      console.log("Playing from " + start)
+      genres.slice(start).forEach((g, i) => {
+        setTimeout(() => {
+          current = start + i
+          const info = {
+            genre: g.innerText,
+            song: g.title.slice(5),
+            genreId: current
+          }
+          g.click();
+          chrome.storage.sync.set(info)
+          chrome.runtime.sendMessage({
+            type: "CURRENT",
+            ...info
+          })
+        }, i * 30000);
+      });
+    }
   } else if (type === "STOP") {
-    let id = window.setInterval(function() { }, Number.MAX_SAFE_INTEGER);
-    for (let i = 1; i < id; i++) {
-      window.clearInterval(i);
+    if (playState) {
+      genres[current].click()
+      playState = false;
+      let id = window.setInterval(function() { }, Number.MAX_SAFE_INTEGER);
+      for (let i = 1; i < id; i++) {
+        window.clearInterval(i);
+      }
     }
   }
 })
-

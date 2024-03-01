@@ -1,3 +1,8 @@
+#header {
+  text-decoration: underline;
+  font-size: 1.25rem;
+}
+
 #number {
   padding: 1px;
 }
